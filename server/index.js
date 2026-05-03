@@ -22,8 +22,22 @@ const io = new Server(server, {
   }
 });
 
-app.use(cors());
+const ALLOWED_ORIGINS = [
+  process.env.CLIENT_URL,
+  'https://splitghar-client.vercel.app',
+  'http://localhost:5173'
+].filter(Boolean);
+
+app.use(cors({
+  origin: ALLOWED_ORIGINS.length > 0 ? ALLOWED_ORIGINS : "*",
+  credentials: true
+}));
 app.use(express.json());
+
+// Health check
+app.get('/', (req, res) => {
+  res.json({ status: 'Splitghar API is running', version: '1.0.0' });
+});
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
@@ -272,7 +286,18 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!', details: err.message });
 });
+
+const PORT = process.env.PORT || 5000;
+
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

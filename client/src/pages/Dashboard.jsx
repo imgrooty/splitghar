@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, ArrowUpRight, ArrowDownLeft, Users, Receipt } from 'lucide-react';
 import api from '../services/api';
+import socket from '../services/socket';
 import useAuthStore from '../store/authStore';
 
 const Dashboard = () => {
@@ -10,22 +11,34 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuthStore();
 
+  const fetchData = async () => {
+    try {
+      const [statsRes, groupsRes] = await Promise.all([
+        api.get('/dashboard/stats'),
+        api.get('/groups')
+      ]);
+      setStats(statsRes.data);
+      setRecentGroups(groupsRes.data.slice(0, 5));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [statsRes, groupsRes] = await Promise.all([
-          api.get('/dashboard/stats'),
-          api.get('/groups')
-        ]);
-        setStats(statsRes.data);
-        setRecentGroups(groupsRes.data.slice(0, 5));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
+
+    // Socket real-time connection
+    socket.connect();
+    socket.on('balance_update', () => {
+      fetchData();
+    });
+
+    return () => {
+      socket.off('balance_update');
+      socket.disconnect();
+    };
   }, []);
 
   if (loading) return <div className="flex justify-center py-20 text-primary font-bold">Loading...</div>;

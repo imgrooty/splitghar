@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Plus, Receipt, ArrowRight, User, Calendar, CreditCard } from 'lucide-react';
 import api from '../services/api';
+import socket from '../services/socket';
 import useAuthStore from '../store/authStore';
 import { toast } from 'sonner';
 
@@ -21,6 +22,22 @@ const GroupDetail = () => {
 
   useEffect(() => {
     fetchGroup();
+    
+    // Socket real-time connection
+    socket.connect();
+    socket.emit('join_group', id);
+    
+    socket.on('balance_update', ({ groupId }) => {
+      if (groupId === id) {
+        fetchGroup();
+        toast.info('Group balance updated');
+      }
+    });
+
+    return () => {
+      socket.off('balance_update');
+      socket.disconnect();
+    };
   }, [id]);
 
   const fetchGroup = async () => {
