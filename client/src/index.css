@@ -1,0 +1,44 @@
+@import url('https://fonts.cdnfonts.com/css/cabinet-grotesk');
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  background-color: #FFFFFF;
+  color: #0F172A;
+}
+
+body {
+  font-family: 'Satoshi', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabinet Grotesk', sans-serif;
+}
+
+.bento-card {
+  @apply bg-white border border-primary/10 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6;
+}
+
+.btn-primary {
+  @apply bg-primary text-white hover:bg-[#054a6b] rounded-xl px-6 py-3 font-semibold transition-colors disabled:opacity-50;
+}
+
+.btn-accent {
+  @apply bg-accent text-white hover:bg-[#02a885] rounded-xl px-6 py-3 font-semibold transition-colors disabled:opacity-50;
+}
+
+.btn-outline {
+  @apply border-2 border-primary/20 text-primary hover:border-primary/40 rounded-xl px-6 py-3 font-semibold transition-colors;
+}
+
+.owed-to-you {
+  @apply text-positive font-bold;
+}
+
+.you-owe {
+  @apply text-negative font-bold;
+}
