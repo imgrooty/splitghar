@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Plus, Receipt, ArrowRight, User, Calendar, CreditCard } from 'lucide-react';
 import api from '../services/api';
 import socket from '../services/socket';
